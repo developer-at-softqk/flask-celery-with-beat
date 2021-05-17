@@ -1,5 +1,7 @@
 from app.factory import db
+from sqlalchemy.ext.declarative import declarative_base
 
+Base = declarative_base()
 
 class Employee(db.Model):
     """
@@ -11,6 +13,7 @@ class Employee(db.Model):
     __tablename__ = 'employees'
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
 
 
 class Department(db.Model):
@@ -21,3 +24,4 @@ class Department(db.Model):
     __tablename__ = 'departments'
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))

@@ -3,7 +3,8 @@ version: '3'
 services: 
   base:
     build: .
-  
+    volumes: 
+      - .:/www
   web:
     extends:
       service: base
@@ -13,8 +14,6 @@ services:
     links: 
       - db
       - redis
-    volumes: 
-      - ./storage:/www/storage  
     
   db:
     image: mysql:5.7
@@ -27,7 +26,7 @@ services:
       MYSQL_PASSWORD: insta2018
       MYSQL_DATABASE: insta_db
     volumes:
-      - test_volume:/var/lib/mysql 
+      - sample_volume:/var/lib/mysql 
       
   redis:
     image: redis:latest
@@ -57,4 +56,4 @@ services:
       - redis  
 
 volumes:
-  test_volume:      
+  sample_volume:      
