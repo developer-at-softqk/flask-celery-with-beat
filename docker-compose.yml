@@ -1,0 +1,35 @@
+version: '3'
+
+services: 
+  redis:
+    image: redis:latest
+    hostname: redis
+  
+  web:
+    build: .
+    hostname: web
+    ports: 
+      - "5000:5000"
+    links: 
+      - redis
+    volumes: 
+      - .:/www  
+  
+  celery-worker:
+    build: .
+    environment: 
+      - C_FORCE_ROOT=true
+    command: "celery worker -A celery_worker.celery --loglevel=info"
+    links:
+      - redis
+    depends_on: 
+      - redis
+      - celery-beat  
+  
+  celery-beat:
+    build: .
+    environment: 
+      - C_FORCE_ROOT=true
+    command: "celery -A celery_worker.celery beat --loglevel=info"  
+    links:
+      - redis  
