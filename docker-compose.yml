@@ -1,25 +1,46 @@
 version: '3'
 
 services: 
-  redis:
-    image: redis:latest
-    hostname: redis
+  base:
+    build: .
   
   web:
-    build: .
+    extends:
+      service: base
     hostname: web
     ports: 
       - "5000:5000"
     links: 
+      - db
       - redis
     volumes: 
-      - .:/www  
-  
+      - ./storage:/www/storage  
+    
+  db:
+    image: mysql:5.7
+    hostname: db
+    ports:
+      - "32000:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: insta_admin
+      MYSQL_PASSWORD: insta2018
+      MYSQL_DATABASE: insta_db
+    volumes:
+      - test_volume:/var/lib/mysql 
+      
+  redis:
+    image: redis:latest
+    hostname: redis
+
   celery-worker:
-    build: .
+    extends:
+      service: base
     environment: 
       - C_FORCE_ROOT=true
     command: "celery worker -A celery_worker.celery --loglevel=info"
+    deploy:
+      replicas: 5
     links:
       - redis
     depends_on: 
@@ -27,9 +48,13 @@ services:
       - celery-beat  
   
   celery-beat:
-    build: .
+    extends:
+      service: base
     environment: 
       - C_FORCE_ROOT=true
     command: "celery -A celery_worker.celery beat --loglevel=info"  
     links:
       - redis  
+
+volumes:
+  test_volume:      

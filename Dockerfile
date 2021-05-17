@@ -1,5 +1,12 @@
 FROM python:3.8
 
+# Set environment varibles
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt update && \
+    apt install -y netcat-openbsd
+
 # add requirements.txt to the image
 ADD requirements.txt /www/requirements.txt
 
